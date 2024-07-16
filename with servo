@@ -1,0 +1,48 @@
+#include <Servo.h>
+
+#define TRIG_PIN D1
+#define ECHO_PIN D2
+#define SERVO_PIN D3
+
+Servo servo;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  servo.attach(SERVO_PIN);
+}
+
+void loop() {
+  long duration, distance;
+  
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = (duration / 2) / 29.1;
+
+  Serial.print("Distance: ");
+  Serial.println(distance);
+
+  if (distance < 20) {
+    openDustbin();
+    delay(5000); // Keep the dustbin open for 5 seconds (adjust as needed)
+    closeDustbin();
+  }
+
+  delay(1000); // Adjust the delay based on your needs
+}
+
+void openDustbin() {
+  servo.write(120); // Assuming 90 degrees is an open position
+  delay(500);
+}
+
+void closeDustbin() {
+  servo.write(0); // Assuming 0 degrees is a closed position
+  delay(500);
+}
